@@ -4,13 +4,16 @@
 # Via an ISP programmer connected to AVR1, this sets fuses, flashes the
 # QMK firmware, and flashes the USBaspLoader bootloader.
 #
+# It builds this repo's firmware/qmk (not the upstream copy inside
+# qmk_firmware) by symlinking it into QMK as kb_elmo/aek2_usb_local.
+#
 # After this script succeeds, future firmware updates can be done over
-# USB (hold Esc at plug-in, then `qmk flash`) — no ISP needed.
+# USB (hold BOOT, tap RESET, release BOOT, then `qmk flash`) — no ISP needed.
 #
 # Overrides:
 #   PROGRAMMER   avrdude -c value (default: usbasp)
 #   PORT         avrdude -P value (optional; needed for Arduino-as-ISP etc.)
-#   KEYMAP       QMK keymap name (default: default)
+#   KEYMAP       QMK keymap name: default, via, diag (default: default)
 #   SKIP_BUILD   if set, uses the existing compiled hex instead of recompiling
 
 set -euo pipefail
@@ -19,12 +22,13 @@ PROGRAMMER="${PROGRAMMER:-usbasp}"
 PORT="${PORT:-}"
 KEYMAP="${KEYMAP:-default}"
 MCU="atmega32"
-KB="kb_elmo/aek2_usb"
+KB="kb_elmo/aek2_usb_local"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BOOTLOADER_HEX="$SCRIPT_DIR/bootloader/aek2_usb_bootloader.hex"
 QMK_HOME="${QMK_HOME:-$HOME/qmk_firmware}"
-FIRMWARE_HEX="$QMK_HOME/kb_elmo_aek2_usb_${KEYMAP}.hex"
+KB_LINK="$QMK_HOME/keyboards/$KB"
+FIRMWARE_HEX="$QMK_HOME/${KB//\//_}_${KEYMAP}.hex"
 
 # Put the AVR toolchain on PATH (Apple Silicon + Intel Homebrew)
 for prefix in /opt/homebrew /usr/local; do
@@ -46,6 +50,11 @@ command -v qmk     >/dev/null || die "qmk CLI not found; brew install qmk/qmk/qm
 [ -d "$QMK_HOME" ]       || die "qmk_firmware not found at $QMK_HOME; run \`qmk setup\`"
 
 if [ -z "${SKIP_BUILD:-}" ]; then
+    if [ "$(readlink "$KB_LINK" 2>/dev/null)" != "$SCRIPT_DIR/qmk" ]; then
+        [ -e "$KB_LINK" ] && [ ! -L "$KB_LINK" ] && die "$KB_LINK exists and is not a symlink; move it aside"
+        step "Linking $SCRIPT_DIR/qmk into QMK as $KB"
+        ln -sfn "$SCRIPT_DIR/qmk" "$KB_LINK"
+    fi
     step "Compiling QMK firmware ($KB:$KEYMAP)"
     ( cd "$QMK_HOME" && qmk compile -kb "$KB" -km "$KEYMAP" )
 fi
@@ -68,5 +77,5 @@ step "Flashing bootloader at 0x7000 (no erase)"
 avrdude "${AVRDUDE_ARGS[@]}" -D \
     -U flash:w:"$BOOTLOADER_HEX":i
 
-step "Done. Disconnect the ISP programmer and plug the keyboard in via USB."
-printf "   Future firmware updates: hold Esc at plug-in, then \`qmk flash -kb %s -km %s\`.\n" "$KB" "$KEYMAP"
+step "Done. Disconnect the ISP programmer and connect the keyboard's USB if it isn't already."
+printf "   Future firmware updates: hold BOOT, tap RESET, release BOOT, then \`qmk flash -kb %s -km %s\`.\n" "$KB" "$KEYMAP"
