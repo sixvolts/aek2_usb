@@ -3,6 +3,8 @@
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 <a href="https://ko-fi.com/kb_elmo"><img src="https://i.imgur.com/9T0bvqO.png" alt="kofibadge" align="right"/></a>
 
+> **Fork notes:** the QMK firmware is updated to current QMK's data-driven `keyboard.json` format, and there's a one-shot ISP bring-up script plus build/flash/troubleshooting guide in [`firmware/FLASHING.md`](firmware/FLASHING.md). The zener entry in the parts list is corrected: the original link pointed to the 1.3 W BZX85C3V6, which leaks enough to hold USB D- around 2.2 V. Use 3.6 V zeners rated 500 mW or less.
+
 ## This project is completed and will not get updated anymore.
 
 #### QMK compatible drop-in replacement PCB for the Apple Extended Keyboard II
@@ -37,7 +39,7 @@ Example: https://www.adafruit.com/product/1764
 |2|68 Ω resistor|R2, R3|[Multicomp MF25 68R](https://octopart.com/mf25+68r-multicomp-5364489)|
 |4|1.5 kΩ resistor|R1, R5, R6, R7|[Multicomp MF25 1k5](https://octopart.com/mf25+1k5-multicomp-5372506)|
 |3|5mm LED (for the lock indicators)|LED1, LED2, LED3|[Vishay TLHG5400](https://octopart.com/tlhg5400-vishay-39403037)|
-|2|3.6 V zener diode (DO-35 BZX55C3V6)|D1, D2|[ON Semiconductor BZX85C3V6](https://octopart.com/bzx85c3v6-on+semiconductor-84409073)|
+|2|3.6 V zener diode, **500 mW max** (DO-35 BZX55C3V6 or 1N5227B — not 1 W+ parts like BZX85C3V6/1N47xx)|D1, D2|[Vishay BZX55C3V6](https://octopart.com/search?q=BZX55C3V6)|
 |105|universal switching diode (DO-35 1N4148)|D3-D107|[ON Semiconductor 1N4148](https://octopart.com/1n4148-on+semiconductor-6807167)|
 
 #### Some pictures of the first finished PCB
