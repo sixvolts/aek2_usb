@@ -36,16 +36,17 @@ avrdude -? 2>&1 | head -1
 
 ## Stage 1 — Burn the Bootloader
 
-### 1.1 Build the bootloader hex
+### 1.1 Locate the bootloader hex
 
-The USBaspLoader source lives in this repo. Build it:
+A prebuilt binary ships in this repo at `firmware/bootloader/aek2_usb_bootloader.hex` — use that one. It's compiled from the USBaspLoader source in `firmware/bootloader/firmware/` and targets the ATmega32A at 16 MHz with bootloader address `0x7000`.
+
+If you ever want to rebuild it (e.g. after tweaking `bootloaderconfig.h`):
 
 ```sh
 cd firmware/bootloader/firmware
 make
+cp main.hex ../aek2_usb_bootloader.hex
 ```
-
-This produces `main.hex` (~2.1 KB). That's your bootloader binary.
 
 ### 1.2 Connect the ISP programmer
 
@@ -89,9 +90,11 @@ Fuse meanings:
 
 ### 1.5 Flash the bootloader
 
+From the repo root:
+
 ```sh
 avrdude -c usbasp -p atmega32 \
-  -U flash:w:main.hex:i
+  -U flash:w:firmware/bootloader/aek2_usb_bootloader.hex:i
 ```
 
 You should see "verifying ... X bytes of flash verified". The bootloader is now installed at `0x7000`–`0x7FFF`.
