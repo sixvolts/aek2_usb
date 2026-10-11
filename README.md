@@ -4,6 +4,8 @@
 <a href="https://ko-fi.com/kb_elmo"><img src="https://i.imgur.com/9T0bvqO.png" alt="kofibadge" align="right"/></a>
 
 > **Fork notes:** the QMK firmware is updated to current QMK's data-driven `keyboard.json` format, and there's a one-shot ISP bring-up script plus build/flash/troubleshooting guide in [`firmware/FLASHING.md`](firmware/FLASHING.md). The zener entry in the parts list is corrected: the original link pointed to the 1.3 W BZX85C3V6, which leaks enough to hold USB D- around 2.2 V. Use 3.6 V zeners rated 500 mW or less.
+>
+> The keymaps are laid out for a Mac with the original AEK II keycaps: Control/Option/Command in their labeled positions on both sides, F13–F15, help as Insert (macOS's Help), clear as Clear, and Caps Lock as a regular toggle for a momentary switch in place of the original latching one. Holding the power key acts as Fn: F1/F2 brightness, F3 Mission Control, F4 Launchpad, F7–F9 media, F10–F12 mute/volume.
 
 ## This project is completed and will not get updated anymore.
 
